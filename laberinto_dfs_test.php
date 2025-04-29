@@ -34,7 +34,51 @@ class laberinto {
             [$pos_x, $pos_y + 1]  // Derecha
         ];
         foreach ($movimientos as $mov) {
-            $this->evaluar_posicion_especifica($mov[0], $mov[1]);
+            $mov_x = $mov[0];
+            $mov_y = $mov[1];
+            $res = $this->evaluar_posicion_especifica($mov_x, $mov_y);
+            if ($res) {
+                # Se marca la posición como visitada
+                $this->lab[$mov_x][$mov_y] = '▬';
+                # Se actualiza la posición del sujeto
+                $this->pos = [$mov_x, $mov_y];
+                #Se actualiza la cantidad de pasos
+                $this->pasos += 1;
+                # Se dibuja el laberinto
+                $this->dibujar_lab();
+                # Se llama a la función de exploración nuevamente
+                $this->exploracion();
+            } else {
+                break;
+            }
+        
+    }
+}
+
+public function evaluar_posicion_especifica($x, $y): bool | array {
+    $posicion = $this->lab[$x][$y] ?? null;
+    if ($posicion) {
+        if ($posicion == 'X') {
+            echo "\n". "Posición [$x][$y] es un muro.\n <br>";
+            return false;
+        } elseif ($posicion == ' ') {
+            echo "\n". "Posición [$x][$y] es un espacio vacío.\n <br>";
+            $espacio = [
+                'X' => $x,
+                'Y' => $y
+            ];
+            return true;
+        } elseif ($posicion == 'P' || $posicion == '▬') {
+            echo "\n". "Posición [$x][$y] es el punto de partida o un punto ya transitado.\n <br>";
+            return false;
+        } else  {
+            echo "\n". "Posición [$x][$y] es la salida.\n <br>";
+            return false;
+        }
+
+    } else {
+        echo "Posición [$x][$y] fuera de límites.\n <br>";
+        return false;
     }
 }
 
@@ -68,6 +112,9 @@ class laberinto {
                         break;
                     case 'P':
                         $color = "#77dd77";
+                        break;
+                    case '▬':
+                        $color = "#956868";
                         break;
                     case 'S':
                         $color = "#fdfd96";
@@ -108,28 +155,7 @@ class laberinto {
             ['X','P','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','S']];
     }
 
-    public function evaluar_posicion_especifica($x, $y): bool {
-        $posicion = $this->lab[$x][$y] ?? null;
-        if ($posicion) {
-            if ($posicion == 'X') {
-                echo "\n". "Posición [$x][$y] es un muro.\n";
-                return false;
-            } elseif ($posicion == ' ') {
-                echo "\n". "Posición [$x][$y] es un espacio vacío.\n";
-                return true;
-            } elseif ($posicion == 'P') {
-                echo "\n". "Posición [$x][$y] es el punto de partida.\n";
-                return true;
-            } else  {
-                echo "\n". "Posición [$x][$y] es la salida.\n";
-                return true;
-            }
-
-        } else {
-            echo "Posición [$x][$y] fuera de límites.\n";
-            return false;
-        }
-    }
+    
 }
 
 $lab = new laberinto();
